@@ -18,6 +18,9 @@ class BinanceTickerSensor(Entity):
         self._updateInterval = updateInterval
         self._state = STATE_UNKNOWN
         self._data = {}
+        # Add the unique_id based on the symbol
+        self._unique_id = f"binance_unique_{self._symbol.lower()}"
+
 
     @property
     def name(self):
@@ -42,6 +45,11 @@ class BinanceTickerSensor(Entity):
     @property
     def extra_state_attributes(self):
         return self._data
+
+    # Add unique_id property
+    @property
+    def unique_id(self):
+        return self._unique_id  # Return the unique ID for the sensor
 
     async def async_added_to_hass(self):
         logger.debug(
