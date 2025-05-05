@@ -2,11 +2,11 @@
     "domain": "binance",
     "name": "Binance Integration for Home Assistant",
     "codeowners": [
-      "@Kartax"
+      "@zviratkos"
     ],
-    "documentation": "https://github.com/Kartax/home-assistant-binance",
+    "documentation": "https://github.com/zviratkos/home-assistant-binance",
     "integration_type": "hub",
     "iot_class": "cloud_polling",
-    "issue_tracker": "https://github.com/Kartax/home-assistant-binance/issues",
-    "version": "1.2.1"
+    "issue_tracker": "https://github.com/zviratkos/home-assistant-binance/issues",
+    "version": "1.2.10-alpha"
 }
