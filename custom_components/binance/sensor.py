@@ -23,11 +23,17 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     }
 )
 
-def setup_platform(hass, config, add_entities, discovery_info=None):
-    symbols = config.get(CONF_SYMBOLS)
-    decimals = config.get(CONF_DECIMALS)
-    updateInterval = config.get(CONF_UPDATE_INVERVAL)
+async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
+    symbols = config[CONF_SYMBOLS]
+    decimals = config[CONF_DECIMALS]
+    interval = config[CONF_UPDATE_INVERVAL]
 
+    sensors = []
     for symbol in symbols:
         logger.debug("Setup BinanceTickerSensor %s %s %s", symbol, decimals, updateInterval)
-        add_entities([BinanceTickerSensor(symbol, decimals, updateInterval)], True)
+        coordinator = BinanceDataCoordinator(hass, symbol, interval)
+        await coordinator.async_config_entry_first_refresh()
+        sensors.append(BinanceTickerSensor(symbol, decimals, coordinator))
+
+    async_add_entities(sensors, update_before_add=True)
+
