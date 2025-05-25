@@ -1,18 +1,17 @@
 import logging
-from datetime import timedelta, datetime
 import decimal
 import aiohttp
-from homeassistant.helpers.entity import Entity
+from datetime import timedelta
 from homeassistant.const import STATE_UNKNOWN
-from homeassistant.components.sensor import SensorDeviceClass
-import asyncio
+from homeassistant.components.sensor import SensorEntity
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-logger = logging.getLogger(__name__)
-
+_LOGGER = logging.getLogger(__name__)
 
 class BinanceDataCoordinator(DataUpdateCoordinator):
     def __init__(self, hass, symbol, interval):
         self.symbol = symbol
+        self._interval_seconds = interval
         super().__init__(
             hass,
             _LOGGER,
@@ -32,10 +31,11 @@ class BinanceDataCoordinator(DataUpdateCoordinator):
             raise UpdateFailed(f"Error fetching Binance data: {err}")
 
 class BinanceTickerSensor(SensorEntity):
-    def __init__(self, symbol, decimals, coordinator):
+    def __init__(self, symbol, decimals, update_interval, coordinator):
         self.coordinator = coordinator
         self._symbol = symbol
         self._decimals = decimals
+        self._update_interval = update_interval
         self._attr_name = f"Binance Ticker {symbol.upper()}"
         self._attr_unique_id = f"binance_unique_{symbol.lower()}"
         self._attr_device_class = "monetary"
@@ -52,7 +52,10 @@ class BinanceTickerSensor(SensorEntity):
 
     @property
     def extra_state_attributes(self):
-        return self.coordinator.data
+        attrs = dict(self.coordinator.data or {})
+        attrs["update_interval"] = self._update_interval
+        return attrs
 
     async def async_update(self):
         await self.coordinator.async_request_refresh()
+
