@@ -23,7 +23,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     sensors = []
     for symbol in symbols:
         coordinator = BinanceDataCoordinator(hass, symbol, interval)
-        await coordinator.async_refresh()  # instead of async_config_entry_first_refresh()
+        await coordinator.async_refresh()
         sensors.append(BinanceTickerSensor(symbol, decimals, interval, coordinator))
 
     async_add_entities(sensors, update_before_add=True)
