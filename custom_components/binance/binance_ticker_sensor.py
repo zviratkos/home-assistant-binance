@@ -40,6 +40,13 @@ class BinanceTickerSensor(SensorEntity):
         self._attr_unique_id = f"binance_unique_{symbol.lower()}"
         self._attr_device_class = "monetary"
         self._attr_native_unit_of_measurement = "USD"
+        self._attr_should_poll = False
+
+    async def async_added_to_hass(self):
+        self.coordinator.async_add_listener(self.async_write_ha_state)
+
+    async def async_will_remove_from_hass(self):
+        self.coordinator.async_remove_listener(self.async_write_ha_state)
 
     @property
     def native_value(self):
